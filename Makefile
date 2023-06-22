@@ -1,5 +1,5 @@
 obj-m += HD44780_driver.o
-HD44780_driver-objs += driver_main.o file_operations.o
+HD44780_driver-objs += driver_main.o file_operations.o display.o HD44780.o
 ccflags-y := -std=gnu99 -O2 -Wno-declaration-after-statement
 
 all:
