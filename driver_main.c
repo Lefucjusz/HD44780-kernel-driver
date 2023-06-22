@@ -4,6 +4,7 @@
 
 #include "file_operations.h"
 #include "log.h"
+#include "display.h"
 
 #define DEVICE_NAME "lcd"
 #define CLASS_NAME "lcd"
@@ -31,7 +32,14 @@ static int __init dev_init(void)
 {
     int err;
 
-    LOG_INFO("Registering device...");
+    LOG_INFO("Initalizing driver...");
+
+    /* Initalize display */
+    err = display_init();
+    if (err < 0) {
+        LOG_ERROR("Failed to initialize display!");
+        return err;
+    }
     
     /* Allocate major number */
     err = alloc_chrdev_region(&lcd_dev_ctx.lcd_dev, DEVICE_BASE_MINOR, DEVICE_MINOR_NUMS_COUNT, DEVICE_NAME);
@@ -70,20 +78,21 @@ static int __init dev_init(void)
         return -1;
     }
     
-    LOG_INFO("Device registered successfully!");
+    LOG_INFO("Driver initialized successfully!");
     return 0;
 }
 
 static void __exit dev_exit(void)
 {
-    LOG_INFO("Unregistering device...");
+    LOG_INFO("Unregistering driver...");
 
     device_destroy(lcd_dev_ctx.lcd_class, lcd_dev_ctx.lcd_dev);
     class_destroy(lcd_dev_ctx.lcd_class);
     cdev_del(&lcd_dev_ctx.lcd_cdev);
     unregister_chrdev_region(lcd_dev_ctx.lcd_dev, DEVICE_MINOR_NUMS_COUNT);
+    display_deinit();
     
-    LOG_INFO("Device unregistered successfully!");
+    LOG_INFO("Driver unregistered successfully!");
 }
 
 module_init(dev_init);

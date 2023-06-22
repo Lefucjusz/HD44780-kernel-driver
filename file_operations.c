@@ -5,13 +5,12 @@
 static int file_open(struct inode *inode, struct file *file)
 {
     LOG_INFO("Opening file");
-    return display_init();
+    return 0;
 }
 
 static int file_release(struct inode *inode, struct file *file)
 {
     LOG_INFO("Closing file");
-    display_deinit();
     return 0;
 }
 
@@ -37,6 +36,7 @@ static ssize_t file_write(struct file *file, const char __user *buffer, size_t s
         return -EFAULT;
     }
 
+    display_gotoxy(1, 1);
     for (size_t i = 0; i < size; ++i) {
         if (i == 20) {
             display_gotoxy(2, 1);
